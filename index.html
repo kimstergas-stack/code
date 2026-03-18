@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TimeBank Showdown</title>
+<style>
+body { font-family: Arial; background:#111; color:white; text-align:center; }
+.team { display:inline-block; background:#222; padding:15px; margin:10px; border-radius:10px; width:220px;}
+button { margin:5px; padding:8px; border:none; border-radius:5px; cursor:pointer;}
+.loss{background:#e74c3c;}
+.gain{background:#2ecc71;}
+.invest{background:#3498db;}
+.power{background:#f1c40f; color:black;}
+.admin{background:#9b59b6;}
+</style>
+</head>
+
+<body>
+
+<h1>💼 TimeBank Showdown</h1>
+
+<h2>Teams</h2>
+<div id="teams"></div>
+
+<h2>🏆 Leaderboard</h2>
+<div id="leaderboard"></div>
+
+<hr>
+
+<h2>🎮 Facilitator Panel</h2>
+<button class="admin" onclick="chaos()">🎲 CHAOS</button>
+<button class="admin" onclick="resetGame()">🔄 Reset</button>
+
+<script>
+let teams = [
+{name:"Blue", balance:25200},
+{name:"Green", balance:25200},
+{name:"Purple", balance:25200},
+{name:"Orange", balance:25200}
+];
+
+function render(){
+let html="";
+teams.forEach((t,i)=>{
+html+=`
+<div class="team">
+<h3>${t.name}</h3>
+<div>$${t.balance}</div>
+
+<button class="loss" onclick="update(${i},-1000)">Meeting</button>
+<button class="loss" onclick="update(${i},-500)">Email</button>
+
+<button class="gain" onclick="update(${i},1000)">Decline</button>
+<button class="gain" onclick="update(${i},1200)">Delegate</button>
+
+<button class="invest" onclick="update(${i},-2000)">Plan</button>
+<button class="invest" onclick="update(${i},2500)">Focus</button>
+
+<button class="power" onclick="sabotage(${i})">💣 Sabotage</button>
+<button class="power" onclick="focusShield(${i})">🛡 Focus Shield</button>
+</div>`;
+});
+document.getElementById("teams").innerHTML=html;
+
+let sorted=[...teams].sort((a,b)=>b.balance-a.balance);
+let lb="";
+sorted.forEach((t,i)=>{
+lb+=`<p>${i+1}. ${t.name}: $${t.balance}</p>`;
+});
+document.getElementById("leaderboard").innerHTML=lb;
+}
+
+function update(i,amt){
+teams[i].balance+=amt;
+render();
+}
+
+function chaos(){
+let events=[
+-500,-800,-300,1000,1500,-1200
+];
+teams.forEach((t,i)=>{
+let rand=events[Math.floor(Math.random()*events.length)];
+t.balance+=rand;
+});
+alert("CHAOS HIT ALL TEAMS!");
+render();
+}
+
+function sabotage(i){
+let target = prompt("Enter team to sabotage (Blue, Green, Purple, Orange)");
+let team = teams.find(t=>t.name.toLowerCase()==target.toLowerCase());
+if(team){
+team.balance -= 800;
+teams[i].balance -= 200;
+alert("Sabotage successful!");
+render();
+}
+}
+
+function focusShield(i){
+teams[i].balance -= 500;
+alert("Next interruption ignored (facilitator enforces)");
+render();
+}
+
+function resetGame(){
+teams.forEach(t=>t.balance=25200);
+render();
+}
+
+render();
+</script>
+
+</body>
+</html>
